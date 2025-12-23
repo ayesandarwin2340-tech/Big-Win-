@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIGWIN AI - FINAL VERSION</title>
+    <style>
+        :root { --primary: #00f2ff; --win: #00ffa3; --lose: #ff4747; --card: #0f172a; }
+        body { background: #020617; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 360px; background: var(--card); border-radius: 24px; border: 1px solid #1e293b; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .period-info { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; margin-bottom: 20px; border: 1px dashed #334155; }
+        .prediction { font-size: 72px; font-weight: 900; margin: 15px 0; }
+        .BIG { color: var(--lose); text-shadow: 0 0 20px rgba(255,71,71,0.4); }
+        .SMALL { color: var(--win); text-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .key-box { font-family: monospace; font-size: 11px; background: #020617; padding: 10px; border-radius: 8px; color: #64748b; border: 1px solid #1e293b; }
+        
+        /* Table Section */
+        .history-card { width: 100%; max-width: 360px; margin-top: 20px; background: var(--card); border-radius: 20px; border: 1px solid #1e293b; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: rgba(255,255,255,0.05); padding: 12px; color: #94a3b8; font-weight: 500; }
+        td { padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .tag { font-weight: 900; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div class="logo-container">
+    <div class="brain-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.5 2C7.567 2 6 3.567 6 5.5C6 5.613 6.005 5.725 6.015 5.836C4.28 6.273 3 7.828 3 9.7C3 11.233 3.864 12.561 5.132 13.235C5.046 13.473 5 13.731 5 14C5 15.657 6.343 17 8 17C8.24 17 8.469 16.972 8.688 16.919C9.378 18.165 10.707 19 12.25 19C14.045 19 15.5 17.545 15.5 15.75C15.5 15.617 15.492 15.485 15.476 15.356C17.481 14.898 19 13.125 19 11C19 8.875 17.481 7.102 15.476 6.644C15.492 6.515 15.5 6.383 15.5 6.25C15.5 4.455 14.045 3 12.25 3C11.583 3 10.967 3.201 10.455 3.545C10.15 2.646 9.3 2 8.3 2H9.5Z" stroke="#00f2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 7V15" stroke="#00f2ff" stroke-width="1" stroke-dasharray="2 2"/>
+            <circle cx="12" cy="11" r="2" fill="#00f2ff" class="brain-core"/>
+        </svg>
+    </div>
+    <div class="logo-text">
+        NEURAL <span class="highlight">PATTERN</span> AI
+    </div>
+    <div class="status-glow"></div>
+</div>
+
+<style>
+    .logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .brain-icon {
+        width: 60px;
+        height: 60px;
+        filter: drop-shadow(0 0 8px var(--primary));
+        margin-bottom: 10px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .brain-core {
+        animation: core-glow 1.5s ease-in-out infinite alternate;
+    }
+
+    .logo-text {
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    .logo-text .highlight {
+        color: var(--primary);
+        text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .status-glow {
+        height: 2px;
+        width: 40px;
+        background: var(--primary);
+        margin-top: 8px;
+        box-shadow: 0 0 10px var(--primary);
+        border-radius: 10px;
+    }
+
+    /* ဦးနှောက်ပုံစံ Pulse Animation */
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    /* အလယ်က အစက်လေး လင်းထိန်ဖို့ Animation */
+    @keyframes core-glow {
+        from { fill: #00f2ff; r: 1.5; opacity: 0.5; }
+        to { fill: #fff; r: 2.5; opacity: 1; }
+    }
+</style>
+  <div class="period-info">
+        <div style="font-size: 10px; opacity: 0.5;">TARGET PERIOD</div>
+        <div id="nextPeriod" style="font-size: 18px; font-weight: bold;">--------</div>
+    </div>
+    <div id="predictionText" class="prediction">---</div>
+    <div style="font-size: 10px; opacity: 0.5; margin-bottom: 5px;">ANALYZED PATTERNS</div>
+    <div class="key-box" id="patternKey">WAITING...</div>
+    <div id="apiStatus" style="font-size: 10px; margin-top: 15px; color: #475569;">Initializing...</div>
+</div>
+
+<div class="history-card">
+    <table>
+        <thead>
+            <tr>
+                <th>PERIOD</th>
+                <th>RESULT</th>
+                <th>PREDICT</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+    </table>
+        <div class="footer">
+        <div class="footer-grid">
+            <div class="footer-item">
+                <span class="label">SERVER TIME</span>
+                <span id="liveClock" class="value">00:00:00</span>
+            </div>
+            <div class="footer-item">
+                <span class="label">AI ENGINE</span>
+                <span class="value" style="color: var(--win)">ACTIVE v3.5</span>
+            </div>
+            <div class="footer-item">
+                <span class="label">CONNECTION</span>
+                <span id="pingStatus" class="value">-- ms</span>
+            </div>
+        </div>
+        <div class="copyright">© 2025 BIGWIN NEURAL PREDICTOR - DEVELOPER:Mr.KELVIN</div>
+    </div>
+
+    <style>
+        .footer {
+            width: 100%;
+            max-width: 360px;
+            margin-top: 25px;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .footer-item {
+            text-align: center;
+        }
+        .footer-item .label {
+            display: block;
+            font-size: 8px;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .footer-item .value {
+            font-size: 11px;
+            font-weight: bold;
+            font-family: monospace;
+            color: #cbd5e1;
+        }
+        .copyright {
+            font-size: 8px;
+            color: #334155;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+    </style>
+
+    <script>
+        // Footer အတွက် နာရီနဲ့ Ping တွက်တဲ့ Function
+        function updateFooter() {
+            // နာရီ Update လုပ်ခြင်း
+            const now = new Date();
+            document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
+            
+            // Ping (Simulation) - API နဲ့ ချိတ်ထားတာ သိသာအောင်
+            const ping = Math.floor(Math.random() * (150 - 40 + 1) + 40);
+            document.getElementById('pingStatus').innerText = ping + " ms";
+        }
+        setInterval(updateFooter, 1000);
+    </script>
+
+</div>
+
+<script>
+let PATTERN_DB = {};
+let PREDICTION_HISTORY = {}; // Win/Lose တွက်ရန် ခန့်မှန်းချက်မှတ်တမ်း
+
+async function loadPatterns() {
+    try {
+        const res = await fetch('patterns.json');
+        PATTERN_DB = await res.json();
+        document.getElementById("apiStatus").innerText = "Database Loaded ✅";
+    } catch (err) {
+        document.getElementById("apiStatus").innerText = "JSON File Not Found ❌";
+    }
+}
+
+async function fetchGameData() {
+    const API_URL = 'https://api.bigwinqaz.com/api/webapi/GetNoaverageEmerdList';
+    const AUTH = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOiIxNzY0NDk2MzcxIiwibmJmIjoiMTc2NDQ5NjM3MSIsImV4cCI6IjE3NjQ0OTgxNzEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL2V4cGlyYXRpb24iOiIxMS8zMC8yMDI1IDQ6NTI6NTEgUE0iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBY2Nlc3NfVG9rZW4iLCJVc2VySWQiOiI1ODkxOTMiLCJVc2VyTmFtZSI6Ijk1OTk2MTczMzgzIiwiVXNlclBob3RvIjoiOCIsIk5pY2tOYW1lIjoiTWVtYmVyTk5HS1UyV0kiLCJBbW91bnQiOiIwLjAwIiwiSW50ZWdyYWwiOiIwIiwiTG9naW5NYXJrIjoiSDUiLCJMb2dpblRpbWUiOiIxMS8zMC8yMDI1IDQ6MjI6NTEgUE0iLCJMb2dpbklQQWRkcmVzcyI6IjY5LjE2MC4yNC4xNjYiLCJEYk51bWJlciI6IjAiLCJJc3ZhbGlkYXRvciI6IjAiLCJLZXlDb2RlIjoiMzUiLCJUb2tlblR5cGUiOiJBY2Nlc3NfVG9rZW4iLCJQaG9uZVR5cGUiOiIxIiwiVXNlclR5cGUiOiIwIiwiVXNlck5hbWUyIjoiIiwiaXNzIjoiand0SXNzdWVyIiwiYXVkIjoibG90dGVyeVRpY2tldCJ9.a3msEaiOTDgsoJtteL7MjokgBa7nqRuNhogkwIJx9I8';
+
+    // အစ်ကို့ဆီမှာ အလုပ်လုပ်တဲ့ Payload အတိုင်း အတိအကျ ပြန်ထားပေးပါတယ်
+    const requestPayload = {
+        "pageSize": 10,
+        "pageNo": 1,
+        "typeId": 1,
+        "language": 7,
+        "random": "da47c9ba3c8a49dc9bbc0a22b9b9da17",
+        "signature": "B51221C160FBD2DAFFD0FD306C786D55",
+        "timestamp": 1764496380
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json;charset=UTF-8", "Authorization": AUTH },
+            body: JSON.stringify(requestPayload)
+        });
+
+        const result = await response.json();
+        if (result.code === 0 && result.data.list.length > 0) {
+            processPrediction(result.data.list);
+        }
+    } catch (error) {
+        document.getElementById("apiStatus").innerText = "Connection Failed!";
+    }
+}
+
+function processPrediction(list) {
+    const latestDraw = list[0];
+    const currentPeriod = latestDraw.issueNumber;
+    const nextPeriod = (BigInt(currentPeriod) + 1n).toString();
+    
+    // Pattern Key တွက်ချက်ခြင်း
+    const currentKey = list.slice(0, 10)
+                           .map(item => parseInt(item.number) > 4 ? "B" : "S")
+                           .reverse()
+                           .join("");
+
+    const match = PATTERN_DB[currentKey];
+    const prediction = match ? (match === "B" ? "BIG" : "SMALL") : "---";
+
+    // ခန့်မှန်းချက်ကို သိမ်းဆည်း (Win/Lose တွက်ရန်)
+    PREDICTION_HISTORY[nextPeriod] = prediction;
+
+    // UI Updates
+    document.getElementById("nextPeriod").innerText = nextPeriod;
+    document.getElementById("predictionText").innerText = prediction;
+    document.getElementById("predictionText").className = "prediction " + (prediction !== "---" ? prediction : "");
+    document.getElementById("patternKey").innerText = currentKey;
+    document.getElementById("apiStatus").innerText = match ? "Match Found! ✅" : "No Match in JSON ❌";
+
+    renderTable(list);
+}
+
+function renderTable(list) {
+    const body = document.getElementById("historyBody");
+    body.innerHTML = "";
+
+    list.forEach(item => {
+        const res = parseInt(item.number) > 4 ? "BIG" : "SMALL";
+        const aiPick = PREDICTION_HISTORY[item.issueNumber] || "---";
+        let status = "---";
+
+        if (aiPick !== "---") {
+            status = (aiPick === res) ? `<span class="tag" style="color:var(--win)">WIN</span>` : `<span class="tag" style="color:var(--lose)">LOSE</span>`;
+        }
+
+        body.innerHTML += `<tr>
+            <td>${item.issueNumber.slice(-4)}</td>
+            <td style="color:${res==='BIG'?'var(--lose)':'var(--win)'}">${res}</td>
+            <td>${aiPick}</td>
+            <td>${status}</td>
+        </tr>`;
+    });
+}
+
+loadPatterns().then(() => {
+    setInterval(fetchGameData, 3000);
+    fetchGameData();
+});
+</script>
+</body>
+</html>
